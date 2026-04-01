@@ -1,0 +1,22 @@
+name: "Cloud-Sentinel-v1"
+version: "1.0.0"
+description: "A simulated multimodal Cloud Security Audit environment. Agents must find and quarantine exposed infrastructure."
+author: "Your Name"
+tags: ["security", "multimodal", "cloud", "audit"]
+
+# Defining the exact Pydantic models we built in Day 1
+interface:
+  observation: "CloudObservation"
+  action: "CloudAction"
+
+# The 3 mandatory tasks for the judging criteria
+tasks:
+  - id: "task_1_easy"
+    name: "Identify Public S3 Bucket"
+    difficulty: "easy"
+  - id: "task_2_medium"
+    name: "Quarantine Exposed IAM Role"
+    difficulty: "medium"
+  - id: "task_3_hard"
+    name: "Trace Multi-Step Breach"
+    difficulty: "hard"
