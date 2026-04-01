@@ -1,6 +1,12 @@
 from fastapi import FastAPI, HTTPException # type: ignore
+from enum import Enum
 from .models import CloudAction, StepResult
 from .environment import CloudAuditEnv
+
+class TaskID(str, Enum):
+    task_1 = "task_1"
+    task_2 = "task_2"
+    task_3 = "task_3"
 
 # 1. Initialize the web server
 app = FastAPI(title="Cloud Sentinel Environment API")
@@ -13,13 +19,10 @@ env = CloudAuditEnv()
 # ---------------------------------------------------------
 
 @app.post("/reset", response_model=StepResult)
-def reset_environment():
-    """
-    The agent calls this to start a new puzzle.
-    It returns the fresh observation and sets the score to 0.
-    """
+def reset_environment(task_id: TaskID = TaskID.task_1): # <-- Changed parameter type
     try:
-        return env.reset()
+        # We use .value to extract the actual string ("task_1") to send to the environment
+        return env.reset(task_id=task_id.value) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
