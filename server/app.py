@@ -1,4 +1,4 @@
-import uvicorn
+import uvicorn # type: ignore
 # This imports the app we already built!
 from src.envs.cloud_audit.server import app 
 
