@@ -132,76 +132,51 @@ def parse_model_action(response_text: str) -> str:
 # 4. THE MAIN LOOP
 # ==========================================
 def main():
-    print("Initializing Cloud-Sentinel Agent...")
+    # MANDATORY LOG: [START]
+    print(f"[START] Task: task_1 | Model: {MODEL_NAME}")
+    
     client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
     env = CloudEnvClient(ENV_URL)
-    
-    history: List[str] = []
+    history = []
     
     try:
-        # 1. Start the simulation
-        result = env.reset()
+        result = env.reset(task_id="task_1")
         observation = result["observation"]
-        print(f"Episode Goal: {observation['goal']}")
         
-        for step in range(1, MAX_STEPS + 1):
+        for step_idx in range(1, MAX_STEPS + 1):
             if result.get("done"):
-                print("Environment signaled DONE. Stopping early.")
                 break
                 
-            # 2. Format the data for the LLM
-            user_prompt = build_user_prompt(step, observation, history)
+            user_prompt = build_user_prompt(step_idx, observation, history)
             user_content = [{"type": "text", "text": user_prompt}]
             
+            # (Image logic remains the same...)
             screenshot_uri = extract_screenshot_uri(observation)
             if screenshot_uri:
-                user_content.append({
-                    "type": "image_url",
-                    "image_url": {"url": screenshot_uri}
-                })
+                user_content.append({"type": "image_url", "image_url": {"url": screenshot_uri}})
                 
-            messages = [
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_content}
-            ]
-            
-            # 3. Ask the LLM what to do
-            try:
-                completion = client.chat.completions.create(
-                    model=MODEL_NAME,
-                    messages=messages,
-                    temperature=TEMPERATURE
-                )
-                response_text = completion.choices[0].message.content or ""
-            except Exception as exc:
-                print(f"Model request failed: {exc}")
-                response_text = FALLBACK_ACTION
-                
-            # 4. Clean up the response and send to Server
+            completion = client.chat.completions.create(
+                model=MODEL_NAME,
+                messages=[{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": user_content}]
+            )
+            response_text = completion.choices[0].message.content or ""
             action_str = parse_model_action(response_text)
-            print(f"\nStep {step}: Model suggested -> {action_str}")
             
             result = env.step(action_str)
             observation = result["observation"]
             reward = result.get("reward", 0.0)
+
+            # MANDATORY LOG: [STEP]
+            # Format: [STEP] <step_num> | Action: <action> | Reward: <reward>
+            print(f"[STEP] {step_idx} | Action: {action_str} | Reward: {reward}")
+            history.append(f"Step {step_idx}: {action_str} -> {reward}")
+
+        # MANDATORY LOG: [END]
+        # Format: [END] | Final Reward: <total_reward>
+        print(f"[END] | Final Reward: {result.get('reward', 0.0)}")
             
-            # 5. Log the results
-            error_flag = " [ERROR]" if observation.get("last_action_error") else ""
-            history_line = f"Step {step}: {action_str} -> reward {reward:+.2f}{error_flag}"
-            history.append(history_line)
-            
-            print(f"  Reward: {reward:+.2f} | Done: {result['done']}")
-            if observation.get("last_action_error"):
-                print(f"  Server Error Message: {observation['last_action_error']}")
-                
-        if result.get("done"):
-            print("\n Episode Complete! Mission Accomplished.")
-        else:
-            print(f"\n Reached max steps ({MAX_STEPS}). Mission Failed.")
-            
-    except requests.exceptions.ConnectionError:
-        print("\n[CRITICAL ERROR] Could not connect to the environment.")
-        print("Did you forget to start the FastAPI server in another terminal?")
+    except Exception as e:
+        print(f"Error during inference: {e}")
 
 if __name__ == "__main__":
     main()

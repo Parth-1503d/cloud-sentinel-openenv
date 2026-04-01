@@ -14,5 +14,10 @@ dependencies = [
     "uvicorn",
     "pydantic",
     "numpy",
-    "pillow"
+    "pillow",
+    "requests",
+    "openenv-core>=0.2.0"
 ]
+
+[project.scripts]
+server = "server.app:main"

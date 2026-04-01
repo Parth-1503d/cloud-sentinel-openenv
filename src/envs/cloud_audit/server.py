@@ -41,3 +41,15 @@ def health_check():
     Hugging Face uses this to know your Space deployed successfully.
     """
     return {"status": "Cloud Sentinel Environment is online and ready."}
+
+@app.get("/state", response_model=StepResult)
+def get_current_state():
+    """
+    Mandatory endpoint for OpenEnv spec compliance. 
+    Returns the current state without taking a step.
+    """
+    try:
+        # We'll just return the current observation from our environment
+        return env.step(CloudAction(action_str="noop()")) 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
