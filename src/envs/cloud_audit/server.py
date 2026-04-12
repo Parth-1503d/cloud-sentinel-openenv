@@ -1,10 +1,20 @@
+import sys
+import os
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict, Any, Optional
-# Keep only the environment import
-from src.envs.cloud_audit.environment import CloudAuditEnvironment
+from typing import Dict, Any
 
-# --- 1. Models moved inside to prevent ImportErrors ---
+# Force the current directory into the path so Python can find 'environment'
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Now import directly from the local file
+try:
+    from environment import CloudAuditEnvironment
+except ImportError:
+    # Fallback for different build environments
+    from src.envs.cloud_audit.environment import CloudAuditEnvironment
+
+# --- Models ---
 class ResetRequest(BaseModel):
     task_id: str
 
@@ -17,7 +27,7 @@ class EnvironmentResponse(BaseModel):
     done: bool
     info: Dict[str, Any]
 
-# --- 2. Server Logic ---
+# --- Server Logic ---
 app = FastAPI(title="Cloud-Sentinel API")
 env = CloudAuditEnvironment()
 
@@ -53,7 +63,6 @@ async def health():
 
 def main():
     import uvicorn
-    # Using the local app object directly for maximum reliability
     uvicorn.run(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
