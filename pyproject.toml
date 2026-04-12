@@ -16,7 +16,8 @@ dependencies = [
     "numpy",
     "pillow",
     "requests",
-    "openenv-core>=0.2.0"
+    "openenv-core>=0.2.0",
+    "openai"
 ]
 
 [project.scripts]
