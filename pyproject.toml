@@ -3,22 +3,20 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cloud_sentinel"
-version = "1.0.0"
-description = "OpenEnv Cloud Security Audit Environment"
-authors = [
-    {name = "Your Name", email = "student@college.edu"}
-]
+[project]
+name = "cloud-sentinel"
+version = "0.1.0"
+description = "Autonomous CSPM Environment for AI Agents"
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
-    "fastapi",
-    "uvicorn",
-    "pydantic",
-    "numpy",
-    "pillow",
-    "requests",
-    "openenv-core>=0.2.0",
-    "openai"
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "pydantic>=2.0.0",
+    "openai>=1.0.0",
+    "requests>=2.31.0",
+    "python-multipart>=0.0.6",
 ]
 
 [project.scripts]
-server = "server.app:main"
+server = "src.envs.cloud_audit.server:app"
