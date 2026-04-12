@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from .models import ResetRequest, StepRequest, EnvironmentResponse
-from .environment import CloudAuditEnvironment
+# Changed to absolute imports to prevent ImportError
+from src.envs.cloud_audit.models import ResetRequest, StepRequest, EnvironmentResponse
+from src.envs.cloud_audit.environment import CloudAuditEnvironment
 
 app = FastAPI(title="Cloud-Sentinel API")
 
@@ -40,11 +41,10 @@ async def health():
     """Basic health check for the validator."""
     return {"status": "healthy", "environment": "Cloud-Sentinel"}
 
-# The validator requires a main function as an entry point
 def main():
     import uvicorn
-    # 0.0.0.0 is required for Docker/Hugging Face to be accessible
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    # Starting the app using the full module path string
+    uvicorn.run("src.envs.cloud_audit.server:app", host="0.0.0.0", port=7860, reload=False)
 
 if __name__ == "__main__":
     main()
