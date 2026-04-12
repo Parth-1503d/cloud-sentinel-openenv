@@ -1,16 +1,28 @@
 from fastapi import FastAPI, HTTPException
-# Changed to absolute imports to prevent ImportError
-from src.envs.cloud_audit.models import ResetRequest, StepRequest, EnvironmentResponse
+from pydantic import BaseModel
+from typing import Dict, Any, Optional
+# Keep only the environment import
 from src.envs.cloud_audit.environment import CloudAuditEnvironment
 
-app = FastAPI(title="Cloud-Sentinel API")
+# --- 1. Models moved inside to prevent ImportErrors ---
+class ResetRequest(BaseModel):
+    task_id: str
 
-# Global instance of the environment
+class StepRequest(BaseModel):
+    action_str: str
+
+class EnvironmentResponse(BaseModel):
+    observation: str
+    reward: float
+    done: bool
+    info: Dict[str, Any]
+
+# --- 2. Server Logic ---
+app = FastAPI(title="Cloud-Sentinel API")
 env = CloudAuditEnvironment()
 
 @app.post("/reset", response_model=EnvironmentResponse)
 async def reset(request: ResetRequest):
-    """Initializes the environment for a specific task."""
     try:
         observation = env.reset(task_id=request.task_id)
         return EnvironmentResponse(
@@ -24,7 +36,6 @@ async def reset(request: ResetRequest):
 
 @app.post("/step", response_model=EnvironmentResponse)
 async def step(request: StepRequest):
-    """Executes an action within the current environment."""
     try:
         observation, reward, done, info = env.step(request.action_str)
         return EnvironmentResponse(
@@ -38,13 +49,12 @@ async def step(request: StepRequest):
 
 @app.get("/health")
 async def health():
-    """Basic health check for the validator."""
     return {"status": "healthy", "environment": "Cloud-Sentinel"}
 
 def main():
     import uvicorn
-    # Starting the app using the full module path string
-    uvicorn.run("src.envs.cloud_audit.server:app", host="0.0.0.0", port=7860, reload=False)
+    # Using the local app object directly for maximum reliability
+    uvicorn.run(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
     main()
