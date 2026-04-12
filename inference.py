@@ -1,12 +1,19 @@
 import os
 import re
 import base64
+import subprocess
+import sys
 import textwrap
 import requests # pyright: ignore[reportMissingModuleSource]
 import numpy as np
 from io import BytesIO
 from PIL import Image # type: ignore
 from typing import List, Optional, Dict
+try:
+    from openai import OpenAI # type: ignore
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "openai"])
+    from openai import OpenAI # type: ignore
 from openai import OpenAI # type: ignore
 
 # ==========================================
