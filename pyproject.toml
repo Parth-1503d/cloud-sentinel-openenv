@@ -1,23 +1,21 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "cloud-sentinel"
 version = "0.1.0"
 description = "Autonomous CSPM Environment for AI Agents"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "fastapi",
-    "uvicorn",
-    "pydantic",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "pydantic>=2.0.0",
     "openai>=1.0.0",
-    "requests",
+    "requests>=2.31.0",
+    "python-multipart>=0.0.6",
 ]
+
+[project.scripts]
+server = "src.envs.cloud_audit.server:app"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
-
-[project.scripts]
-server = "src.envs.cloud_audit.server:app"

@@ -1,5 +1,6 @@
+fastapi>=0.100.0
+uvicorn>=0.22.0
+pydantic>=2.0.0
 openai>=1.0.0
-fastapi
-uvicorn
-pydantic
-requests
+requests>=2.31.0
+python-multipart>=0.0.6
