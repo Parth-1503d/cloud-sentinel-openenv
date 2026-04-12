@@ -11,10 +11,12 @@ dependencies = [
     "openai>=1.0.0",
     "requests>=2.31.0",
     "python-multipart>=0.0.6",
+    "openenv-core>=0.2.0",  # Added this for the validator
 ]
 
 [project.scripts]
-server = "src.envs.cloud_audit.server:app"
+# Changed from :app to :main as requested by the validator
+server = "src.envs.cloud_audit.server:main"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

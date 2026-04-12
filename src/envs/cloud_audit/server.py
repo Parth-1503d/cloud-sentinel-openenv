@@ -1,5 +1,7 @@
+from py_compile import main
 from fastapi import FastAPI, HTTPException # type: ignore
 from enum import Enum
+import uvicorn # type: ignore
 from .models import CloudAction, StepResult
 from .environment import CloudAuditEnv
 
@@ -56,3 +58,9 @@ def get_current_state():
         return env.step(CloudAction(action_str="noop()")) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def main():
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+if __name__ == "__main__":
+    main()
