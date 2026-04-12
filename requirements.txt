@@ -1,8 +1,5 @@
+openai>=1.0.0
 fastapi
 uvicorn
 pydantic
-numpy
-Pillow
-python-multipart
-openai>=1.0.0
-requests>=2.31.0
+requests

@@ -1,4 +1,5 @@
 import os
+from openai import OpenAI # type: ignore
 import re
 import base64
 import subprocess
@@ -14,7 +15,6 @@ try:
 except ImportError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "openai"])
     from openai import OpenAI # type: ignore
-from openai import OpenAI # type: ignore
 
 # ==========================================
 # 1. CONFIGURATION & SECRETS
